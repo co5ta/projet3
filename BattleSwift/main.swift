@@ -8,4 +8,13 @@
 
 import Foundation
 
-print(" -- BATTLE SWIFT -- ")
+// Start a new game
+var game = Game()
+
+// Create players and their team
+game.teamsSetUp()
+
+
+
+
+

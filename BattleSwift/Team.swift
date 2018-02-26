@@ -13,4 +13,16 @@ struct Team {
     var characters: [Character]
     
     static let numberOfCharactersByTeam = 3
+    
+    // Return complete list of characters from de team with their description
+    func status() -> String {
+        var text = "\n\(playerName)"
+        text += "\n------"
+        for i in 0..<characters.count {
+            text += "\n\(characters[i].description())"
+        }
+        text += "\n------"
+        
+        return text
+    }
 }
