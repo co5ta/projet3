@@ -36,7 +36,7 @@ struct Character {
     }
     
     func description() -> String {
-        return "\(name) (\(type), \(life) PV)"
+        return "\(name) (\(type), \(weapon.power) ATK, \(life) PV)"
     }
 }
 
