@@ -21,16 +21,16 @@ struct Character {
         switch type {
         case .Fighter:
             self.life = 100
-            self.weapon = Weapon(damage: 10)
+            self.weapon = Sword()
         case .Mage:
-            self.life = 150
-            self.weapon = Weapon(damage: 10)
-        case .Colossus:
-            self.life = 110
-            self.weapon = Weapon(damage: 10)
-        case .Dwarf:
             self.life = 90
-            self.weapon = Weapon(damage: 10)
+            self.weapon = Ring()
+        case .Colossus:
+            self.life = 175
+            self.weapon = Mace()
+        case .Dwarf:
+            self.life = 80
+            self.weapon = Axe()
         }
         
     }

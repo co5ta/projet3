@@ -8,10 +8,7 @@
 
 import Foundation
 
+// Weapon parent class
 class Weapon {
-    var damage: Int
-    
-    init(damage: Int){
-        self.damage = damage
-    }
+    var power: Int = 0
 }
