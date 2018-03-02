@@ -16,11 +16,11 @@ class Ring: Weapon {
         if let weapon: RingLevel = RingLevel(rawValue: level) {
             switch weapon {
             case .Druid:
-                power = 20
+                power = 15
             case .Archmage:
-                power = 25
+                power = 20
             case .Merlin:
-                power = 35
+                power = 30
             }
         }
     }

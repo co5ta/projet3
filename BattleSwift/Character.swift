@@ -22,13 +22,13 @@ class Character {
         
         switch type {
         case .Fighter:
-            lifeMax = 10
+            lifeMax = 100
             weapon = Sword()
         case .Mage:
             lifeMax = 90
             weapon = Ring()
         case .Colossus:
-            lifeMax = 175
+            lifeMax = 180
             weapon = Mace()
         case .Dwarf:
             lifeMax = 80

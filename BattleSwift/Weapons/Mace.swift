@@ -16,13 +16,13 @@ class Mace: Weapon {
         if let weapon: MaceLevel = MaceLevel(rawValue: level) {
             switch weapon {
             case .Aries:
-                power = 5
-            case .Taurus:
                 power = 7
-            case .Gorilla:
+            case .Taurus:
                 power = 10
+            case .Gorilla:
+                power = 14
             case .Rhino:
-                power = 15
+                power = 19
             }
         }
     }
