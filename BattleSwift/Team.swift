@@ -8,21 +8,46 @@
 
 import Foundation
 
-struct Team {
+class Team {
     var playerName: String
     var characters: [Character]
+    var cemetery: [Character] = []
+    var isDefeated: Bool {
+        return characters.count == 0 ? true : false
+    }
     
-    static let numberOfCharactersByTeam = 3
+    init (playerName: String, characters: [Character]) {
+        self.playerName = playerName
+        self.characters = characters
+    }
     
-    // Return complete list of characters from de team with their description
+    // Return complete list of characters from the team with their description
     func status() -> String {
-        var text = "\n\(playerName)"
-        text += "\n------"
-        for i in 0..<characters.count {
-            text += "\n\(characters[i].description())"
+        var text = "------"
+        
+        let allCharacters = characters + cemetery
+        
+        for i in 0..<allCharacters.count {
+            if allCharacters[i].isDead{
+                text += "\nDEAD -"
+            } else {
+                text += "\n\(i + 1)."
+            }
+            text += " \(allCharacters[i].description())"
         }
+        
         text += "\n------"
         
         return text
+    }
+    
+    func bringDeadToCemetery() {
+        for i in 0..<characters.count {
+            if characters[i].isDead {
+                let dead  = characters.remove(at: i)
+                cemetery.append(dead)
+                break
+            }
+        }
     }
 }

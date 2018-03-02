@@ -12,9 +12,10 @@ import Foundation
 var game = Game()
 
 // Create players and their team
-game.teamsSetUp()
+game.setUpTeams()
 
+// Start the battle
+game.runBattle()
 
-
-
-
+// Game over - congrats to winner
+game.CongratsWinner()

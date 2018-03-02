@@ -8,11 +8,13 @@
 
 import Foundation
 
-struct Character {
+class Character {
     var name: String
     var type: CharacterType
     var weapon: Weapon
+    let lifeMax: Int
     var life: Int
+    var isDead = false
     
     init(name: String, type: CharacterType) {
         self.name = name
@@ -20,23 +22,53 @@ struct Character {
         
         switch type {
         case .Fighter:
-            self.life = 100
-            self.weapon = Sword()
+            lifeMax = 10
+            weapon = Sword()
         case .Mage:
-            self.life = 90
-            self.weapon = Ring()
+            lifeMax = 90
+            weapon = Ring()
         case .Colossus:
-            self.life = 175
-            self.weapon = Mace()
+            lifeMax = 175
+            weapon = Mace()
         case .Dwarf:
-            self.life = 80
-            self.weapon = Axe()
+            lifeMax = 80
+            weapon = Axe()
         }
         
+        life = lifeMax
     }
     
     func description() -> String {
         return "\(name) (\(type), \(weapon.power) ATK, \(life) PV)"
+    }
+    
+    func receiveDamage(from enemy: Character) {
+        let damage = enemy.weapon.power
+        life -= damage
+        
+        print("\n\(enemy.name) attacks \(name) !")
+        print("\(name) looses \(damage) PV")
+        
+        // life can't be lower than 0
+        if life <= 0 {
+            life = 0
+            isDead = true
+            print("\(name) is dead !")
+        }
+    }
+    
+    func getHealed(by partner: Character) {
+        let healing = partner.weapon.power
+        life += healing
+        
+        print("\n\(partner.name) heals \(name)")
+        print("\(name) gains \(healing) PV")
+        
+        // life can't be higher than lifeMax
+        if life > lifeMax {
+            life = lifeMax
+            print("He's life is at max level")
+        }
     }
 }
 
