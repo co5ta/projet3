@@ -11,7 +11,7 @@ import Foundation
 // Fighter's weapon
 class Sword: Weapon {
     
-    init(level: Int = 1) {
+    init(level: Int = 0) {
         super.init()
         if let weapon: SwordLevel = SwordLevel(rawValue: level) {
             switch weapon {
@@ -20,9 +20,9 @@ class Sword: Weapon {
             case .Musketeer:
                 power = 13
             case .Justice:
-                power = 15
+                power = 16
             case .Damoclès:
-                power = 18
+                power = 19
             case .Excalibur:
                 power = 25
             }
@@ -33,5 +33,11 @@ class Sword: Weapon {
 
 // All types of sword available
 enum SwordLevel: Int {
-    case Heavy = 1, Musketeer, Justice, Damoclès, Excalibur
+    case Heavy, Musketeer, Justice, Damoclès, Excalibur
+    
+    static let count: Int = {
+        var max = 0
+        while let _ = SwordLevel(rawValue: max) { max += 1 }
+        return max
+    }()
 }

@@ -18,4 +18,4 @@ game.setUpTeams()
 game.runBattle()
 
 // Game over - congrats to winner
-game.CongratsWinner()
+game.congratsWinner()

@@ -10,5 +10,8 @@ import Foundation
 
 // Weapon parent class
 class Weapon {
-    var power: Int = 0
+    var power = 0
+    var className: String {
+        return String(describing: type(of: self)).components(separatedBy: ".").last!
+    }
 }

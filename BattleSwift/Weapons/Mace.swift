@@ -11,7 +11,7 @@ import Foundation
 // Colossus weapon
 class Mace: Weapon {
     
-    init(level: Int = 1) {
+    init(level: Int = 0) {
         super.init()
         if let weapon: MaceLevel = MaceLevel(rawValue: level) {
             switch weapon {
@@ -31,5 +31,11 @@ class Mace: Weapon {
 
 // All types of axe available
 enum MaceLevel: Int {
-    case Aries = 1, Taurus, Gorilla, Rhino
+    case Aries, Taurus, Gorilla, Rhino
+    
+    static var count: Int {
+        var max = 0
+        while let _ = MaceLevel(rawValue: max) { max += 1 }
+        return max
+    }
 }

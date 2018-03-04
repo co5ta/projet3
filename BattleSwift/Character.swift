@@ -15,9 +15,10 @@ class Character {
     let lifeMax: Int
     var life: Int
     var isDead = false
+    var weaponUpdated = false
     
     init(name: String, type: CharacterType) {
-        self.name = name
+        self.name = name.uppercased()
         self.type = type
         
         switch type {
@@ -73,11 +74,14 @@ class Character {
 }
 
 enum CharacterType: Int {
-    case Fighter = 1
+    case Fighter
     case Mage
     case Colossus
-    case Dwarf // Must stay the last case to keep the good value in count var
+    case Dwarf
     
-    // Pay again attention that we must use the last enum case to built this var
-    static var count: Int = CharacterType.Dwarf.rawValue
+    static var count: Int {
+        var max = 0
+        while let _ = CharacterType(rawValue: max) { max += 1 }
+        return max
+    }
 }

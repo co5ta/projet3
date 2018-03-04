@@ -11,18 +11,18 @@ import Foundation
 // Dwarf weapon
 class Axe: Weapon {
     
-    init(level: Int =  1) {
+    init(level: Int = 0) {
         super.init()
         if let weapon: AxeLevel = AxeLevel(rawValue: level) {
             switch weapon {
             case .Scopper:
-                power = 20
+                power = 15
             case .Silver:
-                power = 22
+                power = 18
             case .Golden:
-                power = 26
+                power = 23
             case .Diamond:
-                power = 30
+                power = 28
             }
         }
     }
@@ -31,5 +31,11 @@ class Axe: Weapon {
 
 // All types of axe available
 enum AxeLevel: Int {
-    case Scopper = 1, Silver, Golden, Diamond
+    case Scopper, Silver, Golden, Diamond
+    
+    static let count: Int = {
+        var max = 0
+        while let _ = AxeLevel(rawValue: max) { max += 1 }
+        return max
+    }()
 }

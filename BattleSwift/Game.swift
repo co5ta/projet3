@@ -12,12 +12,15 @@ class Game {
     var teams: [Team] = []
     var gameOver = false
     var winner: Team?
+    var randomBonusNumber: UInt32
+    var randomLimit: UInt32 = 10
     
     static let numberOfPlayers = 2
-    static let numberOfCharactersByTeam = 2
+    static let numberOfCharactersByTeam = 3
     
     init() {
         print(" -- WELCOME TO BATTLE SWIFT -- ")
+        randomBonusNumber = arc4random_uniform(randomLimit)
     }
     
     // Transform String number from readLine to Int
@@ -26,6 +29,10 @@ class Game {
             return 0
         }
         return number
+    }
+    
+    func randomInt(max: Int, min: Int = 0) -> Int {
+        return Int(arc4random_uniform(UInt32(max))) + min
     }
     
     func unavailableChoice() -> String {
@@ -40,7 +47,7 @@ class Game {
             self.teams.append(newPlayer)
         }
         
-        print("\n*** GET READY FOR BATTLE ***")
+        print("\n\n*** GET READY FOR BATTLE ***")
         
         // Recap each teams
         for i in 0..<teams.count{
@@ -80,14 +87,14 @@ class Game {
     
     func createCharacter() -> Character {
         var availableChoice = false
-        var typeOfTheCharacter = CharacterType.Fighter
+        var typeOfTheCharacter =  CharacterType.Fighter
         var nameOfTheCharacter = ""
         
         repeat {
             // Show all types of character available
             for i in 0...CharacterType.count{
                 if let type = CharacterType(rawValue: i) {
-                    print(String(type.rawValue) + ". \(type)")
+                    print(String(type.rawValue + 1) + ". \(type)")
                 }
             }
             
@@ -96,10 +103,10 @@ class Game {
             
             // Check if the player choose an available option
             if (typeChosen == 0 || typeChosen > CharacterType.count) {
-                print("\nPlease choose an available option")
+                print(unavailableChoice())
             } else {
                 availableChoice = true
-                typeOfTheCharacter = CharacterType(rawValue: typeChosen)!
+                typeOfTheCharacter = CharacterType(rawValue: typeChosen - 1)!
             }
         } while (!availableChoice)
         
@@ -114,27 +121,85 @@ class Game {
         return Character(name: nameOfTheCharacter, type: typeOfTheCharacter)
     }
     
+    func searchForBonus(character: Character) {
+        let randomNumber = arc4random_uniform(randomLimit)
+        
+        if randomBonusNumber != randomNumber {
+            print("\n\(randomNumber) != \(randomBonusNumber)")
+        } else {
+            let minLevel = 1
+            var randomLevel: Int
+            var newWeapon: Weapon
+            var newWeaponType: String
+            
+            switch character.type {
+            case .Colossus:
+                randomLevel = randomInt(max: MaceLevel.count, min: minLevel)
+                guard let newWeaponLevel = MaceLevel(rawValue: randomLevel) else {
+                    return
+                }
+                newWeaponType = "\(newWeaponLevel)"
+                newWeapon = Mace(level: randomLevel)
+            case .Dwarf:
+                randomLevel = randomInt(max: AxeLevel.count, min: minLevel)
+                guard let newWeaponLevel = AxeLevel(rawValue: randomLevel) else {
+                    return
+                }
+                newWeaponType = "\(newWeaponLevel)"
+                newWeapon = Axe(level: randomLevel)
+            case .Fighter:
+                randomLevel = randomInt(max: SwordLevel.count, min: minLevel)
+                guard let newWeaponLevel = SwordLevel(rawValue: randomLevel) else {
+                    return
+                }
+                newWeaponType = "\(newWeaponLevel)"
+                newWeapon = Sword(level: randomLevel)
+            case .Mage:
+                randomLevel = randomInt(max: RingLevel.count, min: minLevel)
+                guard let newWeaponLevel = RingLevel(rawValue: randomLevel) else {
+                    return
+                }
+                newWeaponType = "\(newWeaponLevel)"
+                newWeapon = Ring(level: randomLevel)
+            }
+            
+            character.weapon = newWeapon
+            character.weaponUpdated = true
+            print("A treasure chest appears in front of \(character.name), he opens it and ...")
+            print("He found the \(newWeaponType) \(newWeapon.className)")
+            print(character.description())
+        }
+    }
+    
     func runBattle() {
         repeat{
             let characterPlaying = chooseCharacter(fromTeam: teams[0])
+            if characterPlaying.weaponUpdated == false {
+                searchForBonus(character: characterPlaying)
+            }
             let characterTargeted = chooseTarget(depending: characterPlaying)
             
             // character does his action
-            if (characterPlaying.type == .Mage) {
+            if (characterPlaying.weapon.className == "Ring") {
                 characterTargeted.getHealed(by: characterPlaying)
             } else {
                 characterTargeted.receiveDamage(from: characterPlaying)
                 if characterTargeted.isDead {
                     teams[1].bringDeadToCemetery()
+                    if teams[1].characters.count == 1 && teams[1].characters[0].type == .Mage {
+                        giveAttackWeaponToMage(mage: teams[1].characters[0])
+                    }
                 }
             }
-
-            if teams[1].isDefeated {
+            
+            if teams[1].characters.count == 0 {
                 gameOver = true
                 winner = teams[0]
             } else {
                 teams.reverse()
             }
+            
+            print("\n****************************************")
             
         } while (!gameOver)
     }
@@ -164,7 +229,7 @@ class Game {
         var team: Team
         var contextMessage: String
         
-        if character.type == .Mage {
+        if character.weapon.className == "Ring" {
             team = teams[0]
             contextMessage = "\nChoose a team mate to cure:"
         }
@@ -184,11 +249,22 @@ class Game {
         return team.characters[playerChoice - 1]
     }
     
-    func CongratsWinner() {
+    func giveAttackWeaponToMage(mage: Character) {
+        let randomNumber =  randomInt(max: teams[1].cemetery.count)
+        let randomPartner = teams[1].cemetery[randomNumber]
+        let newWeapon = randomPartner.weapon
+        
+        mage.weapon = newWeapon
+        mage.weaponUpdated = true
+        print("\nBut \(mage.name) doesn't intend to surrender")
+        print("He grabs the \(randomPartner.name)'s weapon")
+    }
+    
+    func congratsWinner() {
         guard let winner = winner else {
             print("Error: game is over but we don't know the winner")
             return
         }
-        print("\n 👊 \(winner.playerName) WINS 👊")
+        print("\n👊 \(winner.playerName) WINS 👊\n")
     }
 }
