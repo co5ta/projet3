@@ -26,7 +26,7 @@ class Character {
             lifeMax = 100
             weapon = Sword()
         case .Mage:
-            lifeMax = 90
+            lifeMax = 110
             weapon = Ring()
         case .Colossus:
             lifeMax = 180
@@ -34,6 +34,9 @@ class Character {
         case .Dwarf:
             lifeMax = 80
             weapon = Axe()
+        case .Assassin:
+            lifeMax = 90
+            weapon = Knife()
         }
         
         life = lifeMax
@@ -78,6 +81,7 @@ enum CharacterType: Int {
     case Mage
     case Colossus
     case Dwarf
+    case Assassin
     
     static var count: Int {
         var max = 0

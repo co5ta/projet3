@@ -161,7 +161,15 @@ class Game {
                 }
                 newWeaponType = "\(newWeaponLevel)"
                 newWeapon = Ring(level: randomLevel)
+            case .Assassin:
+                randomLevel = randomInt(max: KnifeLevel.count, min: minLevel)
+                guard let newWeaponLevel = KnifeLevel(rawValue: randomLevel) else {
+                    return
+                }
+                newWeaponType = "\(newWeaponLevel)"
+                newWeapon = Knife(level: randomLevel)
             }
+            
             
             character.weapon = newWeapon
             character.weaponUpdated = true
