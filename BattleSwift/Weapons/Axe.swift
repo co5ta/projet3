@@ -8,9 +8,10 @@
 
 import Foundation
 
-// Dwarf weapon
+/// Weapon of the Dwarf
 class Axe: Weapon {
     
+    /// Initialize a Weapon of type Axe
     init(level: Int = 0) {
         super.init()
         if let weapon: AxeLevel = AxeLevel(rawValue: level) {
@@ -29,10 +30,11 @@ class Axe: Weapon {
     
 }
 
-// All types of axe available
+/// All types of Axe available
 enum AxeLevel: Int {
     case Scopper, Silver, Golden, Diamond
     
+    /// Return the numbers of cases available in the Enum
     static let count: Int = {
         var max = 0
         while let _ = AxeLevel(rawValue: max) { max += 1 }

@@ -8,15 +8,31 @@
 
 import Foundation
 
+/// A *Character* object represents a warrior in a *Team*
 class Character {
+    
+    /// The name of the character
     var name: String
+    
+    /// The type of the Character (Fighter, Mage, Colossus, ...)
     var type: CharacterType
+    
+    /// The weapon used by the Character
     var weapon: Weapon
+    
+    /// The maximum number of life points a Character can have
     let lifeMax: Int
+    
+    /// The number of life points remaining to the Character
     var life: Int
+    
+    /// A Boolean indicating if the Character is dead or alive
     var isDead = false
+    
+    /// A Boolean indicating if the Character gained a bonus weapon
     var weaponUpdated = false
     
+    /// Initialize a Character
     init(name: String, type: CharacterType) {
         self.name = name.uppercased()
         self.type = type
@@ -42,10 +58,12 @@ class Character {
         life = lifeMax
     }
     
+    /// Return a String giving the name, the type, the strength and the remaining life of the Character
     func description() -> String {
         return "\(name) (\(type), \(weapon.power) ATK, \(life) PV)"
     }
     
+    /// Remove some life points from the Character
     func receiveDamage(from enemy: Character) {
         let damage = enemy.weapon.power
         life -= damage
@@ -61,6 +79,7 @@ class Character {
         }
     }
     
+    /// Add some life points from the Character
     func getHealed(by partner: Character) {
         let healing = partner.weapon.power
         life += healing
@@ -76,13 +95,11 @@ class Character {
     }
 }
 
+/// All types of Character available
 enum CharacterType: Int {
-    case Fighter
-    case Mage
-    case Colossus
-    case Dwarf
-    case Assassin
+    case Fighter, Mage, Colossus, Dwarf, Assassin
     
+    /// Return the numbers of cases available in the Enum
     static var count: Int {
         var max = 0
         while let _ = CharacterType(rawValue: max) { max += 1 }

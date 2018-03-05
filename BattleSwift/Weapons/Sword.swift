@@ -8,9 +8,10 @@
 
 import Foundation
 
-// Fighter's weapon
+/// Weapon of the Fighter
 class Sword: Weapon {
     
+    /// Initialize a Weapon of type Sword
     init(level: Int = 0) {
         super.init()
         if let weapon: SwordLevel = SwordLevel(rawValue: level) {
@@ -31,10 +32,11 @@ class Sword: Weapon {
     
 }
 
-// All types of sword available
+/// All types of Sword available
 enum SwordLevel: Int {
     case Heavy, Musketeer, Justice, Damoclès, Excalibur
     
+    /// Return the numbers of cases available in the Enum
     static let count: Int = {
         var max = 0
         while let _ = SwordLevel(rawValue: max) { max += 1 }

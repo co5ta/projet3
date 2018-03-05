@@ -8,22 +8,37 @@
 
 import Foundation
 
+/// An encapsulatation of the different stages of the game
 class Game {
+    
+    /// Array containing each player and his Team, that will fight
     var teams: [Team] = []
+    
+    /// Boolean indicating end of the game
     var gameOver = false
+    
+    /// Give the Team wich wins the battle
     var winner: Team?
+    
+    /// A random number. If it is found during the battle, current Character get a better weapon
     var randomBonusNumber: UInt32
+    
+    /// The maximum limit for the randomBonusNumber
     var randomLimit: UInt32 = 10
     
+    /// Number of players (Teams) in the game
     static let numberOfPlayers = 2
+    
+    /// Number of Characters in each Team
     static let numberOfCharactersByTeam = 3
     
+    /// Initialize a new Game
     init() {
         print(" -- WELCOME TO BATTLE SWIFT -- ")
         randomBonusNumber = arc4random_uniform(randomLimit)
     }
     
-    // Transform String number from readLine to Int
+    /// Transform String number from readLine to Int
     func input() -> Int {
         guard let response = readLine(), let number = Int(response) else {
             return 0
@@ -31,14 +46,17 @@ class Game {
         return number
     }
     
+    /// Return a random Int between parameters min and max
     func randomInt(max: Int, min: Int = 0) -> Int {
         return Int(arc4random_uniform(UInt32(max))) + min
     }
     
+    /// Return an error message for the player when he makes an unavailable choice
     func unavailableChoice() -> String {
         return "Please choose an available choice"
     }
     
+    /// Set up players, Teams, and Characters before the battle start
     func setUpTeams() {
         for i in 1...Game.numberOfPlayers {
             // Create a team of characters for each player
@@ -62,6 +80,7 @@ class Game {
         print("\n!!!!!! FIGHT !!!!!!\n")
     }
     
+    /// Return a Team with characterics chosen by the player
     func createTeam(index: Int) -> Team {
         var playerName = ""
         var charactersOfTheTeam: [Character] = []
@@ -85,6 +104,7 @@ class Game {
         return Team(playerName: playerName, characters: charactersOfTheTeam)
     }
     
+    /// Return a character typed and named by player
     func createCharacter() -> Character {
         var availableChoice = false
         var typeOfTheCharacter =  CharacterType.Fighter
@@ -121,12 +141,67 @@ class Game {
         return Character(name: nameOfTheCharacter, type: typeOfTheCharacter)
     }
     
+    /// Perform the battle sequence
+    func runBattle() {
+        repeat{
+            let characterPlaying = chooseCharacter(fromTeam: teams[0])
+            if characterPlaying.weaponUpdated == false {
+                searchForBonus(character: characterPlaying)
+            }
+            let characterTargeted = chooseTarget(depending: characterPlaying)
+            
+            // Character does his action
+            if (characterPlaying.weapon.className == "Ring") {
+                characterTargeted.getHealed(by: characterPlaying)
+            } else {
+                characterTargeted.receiveDamage(from: characterPlaying)
+                if characterTargeted.isDead {
+                    teams[1].bringDeadToCemetery()
+                    if teams[1].characters.count == 1 && teams[1].characters[0].type == .Mage {
+                        giveAttackWeaponToMage(mage: teams[1].characters[0])
+                    }
+                }
+            }
+            
+            if teams[1].characters.count == 0 {
+                gameOver = true
+                winner = teams[0]
+            } else {
+                teams.reverse()
+            }
+            
+            print("\n****************************************")
+            
+        } while (!gameOver)
+    }
+    
+    /// Return the Character chosen by the player, who will do an action
+    func chooseCharacter(fromTeam team: Team) -> Character {
+        print("\n\n\(team.playerName) - Choose a character:")
+        print(team.status())
+        
+        var availableCharacter = false
+        var playerChoice = 0
+        
+        repeat {
+            let choice = input()
+            if (choice == 0 || choice > team.characters.count) {
+                print(unavailableChoice())
+            }
+            else {
+                availableCharacter = true
+                playerChoice = (choice - 1)
+            }
+        } while (!availableCharacter)
+        
+        return team.characters[playerChoice]
+    }
+    
+    /// Return the Character chosen, with his weapon updated if the randomBonusNumber is found
     func searchForBonus(character: Character) {
         let randomNumber = arc4random_uniform(randomLimit)
         
-        if randomBonusNumber != randomNumber {
-            print("\n\(randomNumber) != \(randomBonusNumber)")
-        } else {
+        if randomBonusNumber == randomNumber {
             let minLevel = 1
             var randomLevel: Int
             var newWeapon: Weapon
@@ -170,69 +245,16 @@ class Game {
                 newWeapon = Knife(level: randomLevel)
             }
             
-            
             character.weapon = newWeapon
             character.weaponUpdated = true
+            
             print("A treasure chest appears in front of \(character.name), he opens it and ...")
             print("He found the \(newWeaponType) \(newWeapon.className)")
             print(character.description())
         }
     }
     
-    func runBattle() {
-        repeat{
-            let characterPlaying = chooseCharacter(fromTeam: teams[0])
-            if characterPlaying.weaponUpdated == false {
-                searchForBonus(character: characterPlaying)
-            }
-            let characterTargeted = chooseTarget(depending: characterPlaying)
-            
-            // character does his action
-            if (characterPlaying.weapon.className == "Ring") {
-                characterTargeted.getHealed(by: characterPlaying)
-            } else {
-                characterTargeted.receiveDamage(from: characterPlaying)
-                if characterTargeted.isDead {
-                    teams[1].bringDeadToCemetery()
-                    if teams[1].characters.count == 1 && teams[1].characters[0].type == .Mage {
-                        giveAttackWeaponToMage(mage: teams[1].characters[0])
-                    }
-                }
-            }
-            
-            if teams[1].characters.count == 0 {
-                gameOver = true
-                winner = teams[0]
-            } else {
-                teams.reverse()
-            }
-            
-            print("\n****************************************")
-            
-        } while (!gameOver)
-    }
-    
-    func chooseCharacter(fromTeam team: Team) -> Character {
-        print("\n\n\(team.playerName) - Choose a character:")
-        print(team.status())
-        
-        var availableCharacter = false
-        var playerChoice = 0
-        
-        repeat {
-            let choice = input()
-            if (choice == 0 || choice > team.characters.count) {
-                print(unavailableChoice())
-            }
-            else {
-                availableCharacter = true
-                playerChoice = (choice - 1)
-            }
-        } while (!availableCharacter)
-        
-        return team.characters[playerChoice]
-    }
-    
+    /// Return the Character chosen by the player who will receive the effect of an action
     func chooseTarget(depending character: Character) -> Character {
         var team: Team
         var contextMessage: String
@@ -257,6 +279,7 @@ class Game {
         return team.characters[playerChoice - 1]
     }
     
+    /// Give an attack weapon to the Mage if he is the last Character of the Team
     func giveAttackWeaponToMage(mage: Character) {
         let randomNumber =  randomInt(max: teams[1].cemetery.count)
         let randomPartner = teams[1].cemetery[randomNumber]
@@ -268,6 +291,7 @@ class Game {
         print("He grabs the \(randomPartner.name)'s weapon")
     }
     
+    /// End the Game with a congrats message to the winner
     func congratsWinner() {
         guard let winner = winner else {
             print("Error: game is over but we don't know the winner")

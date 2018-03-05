@@ -8,24 +8,33 @@
 
 import Foundation
 
+/// A Team object represent a player and the group of characters he chose to do the battle
 class Team {
+    
+    /// The name of the player
     var playerName: String
+    
+    /// An array containing the Characters of the Team that will fight
     var characters: [Character]
+    
+    /// An array containing the Characters of the Team dead during the fight
     var cemetery: [Character] = []
+    
+    /// A Boolean indicating if there is still a living Character in the Team
     var isDefeated: Bool {
         return characters.count == 0 ? true : false
     }
     
+    /// Initialize a Team with a player name and a list of Characters
     init (playerName: String, characters: [Character]) {
         self.playerName = playerName
         self.characters = characters
     }
     
-    // Return complete list of characters from the team with their description
+    /// Return a complete list of characters from the team with their description
     func status() -> String {
-        var text = "------"
-        
         let allCharacters = characters + cemetery
+        var text = "------"
         
         for i in 0..<allCharacters.count {
             if allCharacters[i].isDead{
@@ -35,12 +44,12 @@ class Team {
             }
             text += " \(allCharacters[i].description())"
         }
-        
         text += "\n------"
         
         return text
     }
     
+    /// Switch dead characters from the characters array to the cemetery array
     func bringDeadToCemetery() {
         for i in 0..<characters.count {
             if characters[i].isDead {

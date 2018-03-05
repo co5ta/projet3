@@ -8,8 +8,10 @@
 
 import Foundation
 
+/// Weapon of the Assassin
 class Knife: Weapon {
     
+    /// Initialize a Weapon of type Knife
     init(level: Int = 0) {
         super.init()
         if let weapon: KnifeLevel = KnifeLevel(rawValue: level) {
@@ -25,9 +27,11 @@ class Knife: Weapon {
     }
 }
 
+/// All types of Knife available
 enum KnifeLevel: Int {
     case Venom, Toxin, Cyanide
     
+    /// Return the numbers of cases available in the Enum
     static var count: Int {
         var max = 0
         while let _ = KnifeLevel(rawValue: max) { max += 1 }

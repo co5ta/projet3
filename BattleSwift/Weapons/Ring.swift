@@ -8,9 +8,10 @@
 
 import Foundation
 
-// Mage's weapon
+/// Weapon of the Mage
 class Ring: Weapon {
     
+    /// Initialize a Weapon of type Ring
     init(level: Int = 0) {
         super.init()
         if let weapon: RingLevel = RingLevel(rawValue: level) {
@@ -27,10 +28,11 @@ class Ring: Weapon {
     
 }
 
-// All types of ring available
+/// All types of Ring available
 enum RingLevel: Int {
     case Druid, Archmage, Merlin
     
+    /// Return the numbers of cases available in the Enum
     static let count: Int = {
         var max = 0
         while let _ = RingLevel(rawValue: max) { max += 1 }
