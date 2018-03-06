@@ -28,13 +28,6 @@ class Knife: Weapon {
 }
 
 /// All types of Knife available
-enum KnifeLevel: Int {
+enum KnifeLevel: Int, CaseCountable {
     case Venom, Toxin, Cyanide
-    
-    /// Return the numbers of cases available in the Enum
-    static var count: Int {
-        var max = 0
-        while let _ = KnifeLevel(rawValue: max) { max += 1 }
-        return max
-    }
 }

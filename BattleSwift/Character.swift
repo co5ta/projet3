@@ -60,7 +60,7 @@ class Character {
     
     /// Return a String giving the name, the type, the strength and the remaining life of the Character
     func description() -> String {
-        return "\(name) (\(type), \(weapon.power) ATK, \(life) PV)"
+        return "\(name) (\(type), \(weapon.power) \(weapon.className != "Ring" ? "ATK" : "DEF"), \(life) PV)"
     }
     
     /// Remove some life points from the Character
@@ -96,13 +96,6 @@ class Character {
 }
 
 /// All types of Character available
-enum CharacterType: Int {
+enum CharacterType: Int, CaseCountable {
     case Fighter, Mage, Colossus, Dwarf, Assassin
-    
-    /// Return the numbers of cases available in the Enum
-    static var count: Int {
-        var max = 0
-        while let _ = CharacterType(rawValue: max) { max += 1 }
-        return max
-    }
 }

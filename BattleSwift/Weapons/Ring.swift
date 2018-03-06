@@ -29,13 +29,6 @@ class Ring: Weapon {
 }
 
 /// All types of Ring available
-enum RingLevel: Int {
+enum RingLevel: Int, CaseCountable {
     case Druid, Archmage, Merlin
-    
-    /// Return the numbers of cases available in the Enum
-    static let count: Int = {
-        var max = 0
-        while let _ = RingLevel(rawValue: max) { max += 1 }
-        return max
-    }()
 }

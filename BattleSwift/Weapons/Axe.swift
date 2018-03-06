@@ -31,13 +31,6 @@ class Axe: Weapon {
 }
 
 /// All types of Axe available
-enum AxeLevel: Int {
+enum AxeLevel: Int, CaseCountable {
     case Scopper, Silver, Golden, Diamond
-    
-    /// Return the numbers of cases available in the Enum
-    static let count: Int = {
-        var max = 0
-        while let _ = AxeLevel(rawValue: max) { max += 1 }
-        return max
-    }()
 }

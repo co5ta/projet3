@@ -31,13 +31,6 @@ class Mace: Weapon {
 }
 
 /// All types of Mace available
-enum MaceLevel: Int {
+enum MaceLevel: Int, CaseCountable {
     case Aries, Taurus, Gorilla, Rhino
-    
-    /// Return the numbers of cases available in the Enum
-    static var count: Int {
-        var max = 0
-        while let _ = MaceLevel(rawValue: max) { max += 1 }
-        return max
-    }
 }

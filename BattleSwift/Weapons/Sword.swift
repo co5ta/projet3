@@ -33,13 +33,6 @@ class Sword: Weapon {
 }
 
 /// All types of Sword available
-enum SwordLevel: Int {
+enum SwordLevel: Int, CaseCountable {
     case Heavy, Musketeer, Justice, Damoclès, Excalibur
-    
-    /// Return the numbers of cases available in the Enum
-    static let count: Int = {
-        var max = 0
-        while let _ = SwordLevel(rawValue: max) { max += 1 }
-        return max
-    }()
 }
