@@ -10,7 +10,6 @@ import Foundation
 
 /// A Team object represent a player and the group of characters he chose to do the battle
 class Team {
-    
     /// The name of the player
     var playerName: String
     

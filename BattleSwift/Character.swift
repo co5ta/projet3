@@ -8,20 +8,19 @@
 
 import Foundation
 
+/// Minimum value that can have the lifeMax property of the Character
+let minValueCharacterLifeMax = 50
+
 /// A *Character* object represents a warrior in a *Team*
 class Character {
-    
     /// The name of the character
     var name: String
-    
+
     /// The type of the Character (Fighter, Mage, Colossus, ...)
     var type: CharacterType
     
     /// The weapon used by the Character
     var weapon: Weapon
-    
-    /// The maximum number of life points a Character can have
-    let lifeMax: Int
     
     /// The number of life points remaining to the Character
     var life: Int
@@ -36,31 +35,13 @@ class Character {
     init(name: String, type: CharacterType) {
         self.name = name.uppercased()
         self.type = type
-        
-        switch type {
-        case .Fighter:
-            lifeMax = 100
-            weapon = Sword()
-        case .Mage:
-            lifeMax = 110
-            weapon = Ring()
-        case .Colossus:
-            lifeMax = 180
-            weapon = Mace()
-        case .Dwarf:
-            lifeMax = 80
-            weapon = Axe()
-        case .Assassin:
-            lifeMax = 90
-            weapon = Knife()
-        }
-        
-        life = lifeMax
+        self.life = type.lifeMax
+        self.weapon = Armory.giveWeapon(toCharacterOfType: type)
     }
     
     /// Return a String giving the name, the type, the strength and the remaining life of the Character
     func description() -> String {
-        return "\(name) (\(type), \(weapon.power) \(weapon.className != "Ring" ? "ATK" : "DEF"), \(life) PV)"
+        return "\(name) (\(type), \(weapon.power) \(weapon is Ring ? "DEF" : "ATK"), \(life) PV)"
     }
     
     /// Remove some life points from the Character
@@ -88,14 +69,31 @@ class Character {
         print("\(name) gains \(healing) PV")
         
         // life can't be higher than lifeMax
-        if life > lifeMax {
-            life = lifeMax
+        if life > type.lifeMax {
+            life = type.lifeMax
             print("He's life is at max level")
         }
     }
 }
 
-/// All types of Character available
+/// CharacterType contains the type differents type of Character available in the game
 enum CharacterType: Int, CaseCountable {
+    /// Type of Character available
     case Fighter, Mage, Colossus, Dwarf, Assassin
+    
+    /// Return the maximum life a Character can have, depending his type
+    var lifeMax: Int {
+        switch self {
+        case .Fighter:
+            return minValueCharacterLifeMax + 50    // 100
+        case .Mage:
+            return minValueCharacterLifeMax + 30    // 80
+        case .Colossus:
+            return minValueCharacterLifeMax + 75    // 125
+        case .Dwarf:
+            return minValueCharacterLifeMax + 25    // 75
+        case .Assassin:
+            return minValueCharacterLifeMax + 40    // 90
+        }
+    }
 }

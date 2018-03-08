@@ -10,7 +10,6 @@ import Foundation
 
 /// An encapsulatation of the different stages of the game
 class Game {
-    
     /// Array containing each player and his Team, that will fight
     var teams: [Team] = []
     
@@ -59,10 +58,8 @@ class Game {
     /// Set up players, Teams, and Characters before the battle start
     func setUpTeams() {
         for i in 1...Game.numberOfPlayers {
-            // Create a team of characters for each player
-            let newPlayer = createTeam(index: i)
-            // Add the new player and his team to our list of players
-            self.teams.append(newPlayer)
+            let newTeam = createTeam(index: i)
+            self.teams.append(newTeam)
         }
         
         print("\n\n*** GET READY FOR BATTLE ***")
@@ -151,7 +148,7 @@ class Game {
             let characterTargeted = chooseTarget(depending: characterPlaying)
             
             // Character does his action
-            if (characterPlaying.weapon.className == "Ring") {
+            if (characterPlaying.weapon is Ring) {
                 characterTargeted.getHealed(by: characterPlaying)
             } else {
                 characterTargeted.receiveDamage(from: characterPlaying)
@@ -205,51 +202,26 @@ class Game {
             let minLevel = 1
             var randomLevel: Int
             var newWeapon: Weapon
-            var newWeaponType: String
             
             switch character.type {
             case .Colossus:
-                randomLevel = randomInt(max: MaceLevel.count, min: minLevel)
-                guard let newWeaponLevel = MaceLevel(rawValue: randomLevel) else {
-                    return
-                }
-                newWeaponType = "\(newWeaponLevel)"
-                newWeapon = Mace(level: randomLevel)
+                randomLevel = randomInt(max: Mace.count, min: minLevel)
             case .Dwarf:
-                randomLevel = randomInt(max: AxeLevel.count, min: minLevel)
-                guard let newWeaponLevel = AxeLevel(rawValue: randomLevel) else {
-                    return
-                }
-                newWeaponType = "\(newWeaponLevel)"
-                newWeapon = Axe(level: randomLevel)
+                randomLevel = randomInt(max: Axe.count, min: minLevel)
             case .Fighter:
-                randomLevel = randomInt(max: SwordLevel.count, min: minLevel)
-                guard let newWeaponLevel = SwordLevel(rawValue: randomLevel) else {
-                    return
-                }
-                newWeaponType = "\(newWeaponLevel)"
-                newWeapon = Sword(level: randomLevel)
+                randomLevel = randomInt(max: Sword.count, min: minLevel)
             case .Mage:
-                randomLevel = randomInt(max: RingLevel.count, min: minLevel)
-                guard let newWeaponLevel = RingLevel(rawValue: randomLevel) else {
-                    return
-                }
-                newWeaponType = "\(newWeaponLevel)"
-                newWeapon = Ring(level: randomLevel)
+                randomLevel = randomInt(max: Ring.count, min: minLevel)
             case .Assassin:
-                randomLevel = randomInt(max: KnifeLevel.count, min: minLevel)
-                guard let newWeaponLevel = KnifeLevel(rawValue: randomLevel) else {
-                    return
-                }
-                newWeaponType = "\(newWeaponLevel)"
-                newWeapon = Knife(level: randomLevel)
+                randomLevel = randomInt(max: Knife.count, min: minLevel)
             }
             
+            newWeapon = Armory.giveWeapon(toCharacterOfType: character.type, level: randomLevel)
             character.weapon = newWeapon
             character.weaponUpdated = true
             
             print("A treasure chest appears in front of \(character.name), he opens it and ...")
-            print("He found the \(newWeaponType) \(newWeapon.className)")
+            print("He found the \(newWeapon) \(newWeapon.typeName)")
             print(character.description())
         }
     }
@@ -259,7 +231,7 @@ class Game {
         var team: Team
         var contextMessage: String
         
-        if character.weapon.className == "Ring" {
+        if character.weapon is Ring {
             team = teams[0]
             contextMessage = "\nChoose a team mate to cure:"
         }
