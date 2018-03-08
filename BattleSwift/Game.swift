@@ -31,6 +31,12 @@ class Game {
     /// Number of Characters in each Team
     static let numberOfCharactersByTeam = 3
     
+    ///
+    var playersNames: [String] = []
+    
+    ///
+    var charactersNames: [String] = []
+    
     /// Initialize a new Game
     init() {
         print(" -- WELCOME TO BATTLE SWIFT -- ")
@@ -86,10 +92,16 @@ class Game {
             print("\nPlayer\(index) enter your name:")
             
             // Check if the player entered a name
-            if let name = readLine() {
-                playerName = name.uppercased()
+            if let name = readLine()?.uppercased(), !playersNames.contains(name) {
+                playerName = name
+            } else {
+                print("\nThis name has already been given")
             }
-        } while playerName.isEmpty
+        } while (playerName.isEmpty)
+        
+        /// Add the name to the list of players names
+        playersNames.append(playerName)
+        print(playersNames)
         
         // Create each character of the team
         for i in 1...Game.numberOfCharactersByTeam {
@@ -130,10 +142,16 @@ class Game {
         repeat {
             // Player choose a name for his character
             print("\nGive a name to this character")
-            if let name = readLine() {
+            if let name = readLine()?.uppercased(), !charactersNames.contains(name) {
                 nameOfTheCharacter = name
+            } else {
+                print("\nThis name has already been given")
             }
         } while (nameOfTheCharacter.isEmpty)
+        
+        /// Add the name in the array listing all characters names in the game
+        charactersNames.append(nameOfTheCharacter)
+        print(charactersNames)
         
         return Character(name: nameOfTheCharacter, type: typeOfTheCharacter)
     }
