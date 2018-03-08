@@ -1,3 +1,7 @@
+# Xcode
+project.xcworkspace/
+xcuserdata/
+
 # macOS
 .DS_Store
 profile
