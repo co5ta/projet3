@@ -87,34 +87,38 @@ class Game {
     func createTeam(index: Int) -> Team {
         var playerName = ""
         var charactersOfTheTeam: [Character] = []
+        var hasMage = false
         
         repeat {
             print("\nPlayer\(index) enter your name:")
             
-            // Check if the player entered a name
+            // Check if the player entered a unique name
             if let name = readLine()?.uppercased(), !playersNames.contains(name) {
                 playerName = name
             } else {
-                print("\nThis name has already been given")
+                print("This name has already been taken")
             }
         } while (playerName.isEmpty)
         
         /// Add the name to the list of players names
         playersNames.append(playerName)
-        print(playersNames)
         
         // Create each character of the team
         for i in 1...Game.numberOfCharactersByTeam {
             print("\n\(playerName) - choose the character \(i) of your team:")
-            let newCharacter = createCharacter()
+            
+            let newCharacter = createCharacter(typeMageForbidden: hasMage)
+            print("\(newCharacter.description()) joins your team")
+            
             charactersOfTheTeam.append(newCharacter)
+            hasMage = newCharacter.type == .Mage ? true : false
         }
         
         return Team(playerName: playerName, characters: charactersOfTheTeam)
     }
     
-    /// Return a character typed and named by player
-    func createCharacter() -> Character {
+    /// Return a Character named and typed by player
+    func createCharacter(typeMageForbidden: Bool) -> Character {
         var availableChoice = false
         var typeOfTheCharacter =  CharacterType.Fighter
         var nameOfTheCharacter = ""
@@ -123,7 +127,11 @@ class Game {
             // Show all types of character available
             for i in 0...CharacterType.count{
                 if let type = CharacterType(rawValue: i) {
-                    print(String(type.rawValue + 1) + ". \(type)")
+                    if type == .Mage && typeMageForbidden {
+                        continue
+                    } else {
+                        print(String(type.rawValue + 1) + ". \(type)")
+                    }
                 }
             }
             
@@ -131,12 +139,15 @@ class Game {
             let typeChosen = input()
             
             // Check if the player choose an available option
-            if (typeChosen == 0 || typeChosen > CharacterType.count) {
+            if (typeChosen == 0 || typeChosen > CharacterType.count ||
+                (typeChosen == (CharacterType.Mage.rawValue + 1) && typeMageForbidden))
+            {
                 print(unavailableChoice())
             } else {
                 availableChoice = true
                 typeOfTheCharacter = CharacterType(rawValue: typeChosen - 1)!
             }
+            
         } while (!availableChoice)
         
         repeat {
@@ -145,13 +156,12 @@ class Game {
             if let name = readLine()?.uppercased(), !charactersNames.contains(name) {
                 nameOfTheCharacter = name
             } else {
-                print("\nThis name has already been given")
+                print("This name has already been given to a character")
             }
         } while (nameOfTheCharacter.isEmpty)
         
         /// Add the name in the array listing all characters names in the game
         charactersNames.append(nameOfTheCharacter)
-        print(charactersNames)
         
         return Character(name: nameOfTheCharacter, type: typeOfTheCharacter)
     }
@@ -223,15 +233,15 @@ class Game {
             
             switch character.type {
             case .Colossus:
-                randomLevel = randomInt(max: Mace.count, min: minLevel)
+                randomLevel = randomInt(max: (Mace.count - 1), min: minLevel)
             case .Dwarf:
-                randomLevel = randomInt(max: Axe.count, min: minLevel)
+                randomLevel = randomInt(max: (Axe.count - 1), min: minLevel)
             case .Fighter:
-                randomLevel = randomInt(max: Sword.count, min: minLevel)
+                randomLevel = randomInt(max: (Sword.count - 1), min: minLevel)
             case .Mage:
-                randomLevel = randomInt(max: Ring.count, min: minLevel)
+                randomLevel = randomInt(max: (Ring.count - 1), min: minLevel)
             case .Assassin:
-                randomLevel = randomInt(max: Knife.count, min: minLevel)
+                randomLevel = randomInt(max: (Knife.count - 1), min: minLevel)
             }
             
             newWeapon = Armory.giveWeapon(toCharacterOfType: character.type, level: randomLevel)

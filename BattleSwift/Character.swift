@@ -79,21 +79,21 @@ class Character {
 /// CharacterType contains the type differents type of Character available in the game
 enum CharacterType: Int, CaseCountable {
     /// Type of Character available
-    case Fighter, Mage, Colossus, Dwarf, Assassin
+    case Fighter, Colossus, Dwarf, Assassin, Mage
     
     /// Return the maximum life a Character can have, depending his type
     var lifeMax: Int {
         switch self {
         case .Fighter:
             return minValueCharacterLifeMax + 50    // 100
-        case .Mage:
-            return minValueCharacterLifeMax + 30    // 80
         case .Colossus:
             return minValueCharacterLifeMax + 75    // 125
         case .Dwarf:
             return minValueCharacterLifeMax + 25    // 75
         case .Assassin:
             return minValueCharacterLifeMax + 40    // 90
+        case .Mage:
+            return minValueCharacterLifeMax + 30    // 80
         }
     }
 }
