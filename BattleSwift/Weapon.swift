@@ -28,9 +28,13 @@ let minValueKnifePower = 8
 protocol Weapon {
     /// The power of the weapon represents number of life points it will add or remove to the enemy
     var power: Int { get }
+    /// Return the name of the class
     var typeName: String { get }
+    /// Optional wich return the bas state that can give a weapon to a character
     var canGiveStatus: WeaponEffect? { get }
+    /// Return true if 2 rand numbers are equals
     func randomSuccess(limit: UInt32) -> Bool
+    /// Do the specific action possible with an a weapon
     func specialAction(_ characterPlaying: Character, _ characterTargeted: Character) -> ()
 }
 
@@ -41,7 +45,7 @@ extension Weapon {
         return String(describing: type(of: self)).components(separatedBy: ".").last!
     }
     
-    /// Give random success to an action
+    /// Return true if 2 rand numbers are equals
     func randomSuccess(limit: UInt32) -> Bool {
         let randomLimit: UInt32 = limit
         let rand1 = arc4random_uniform(randomLimit)
