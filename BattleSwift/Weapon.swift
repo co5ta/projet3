@@ -10,12 +10,16 @@ import Foundation
 
 /// Minimum strength of the Sword
 let minValueSwordPower = 10
+
 /// Minimum strength of the Ring
 let minValueRingPower = 8
+
 /// Minimum strength of the Mace
 let minValueMacePower = 6
+
 /// Minimum strength of the Axe
 let minValueAxePower = 14
+
 /// Minimum strength of the Knife
 let minValueKnifePower = 8
 
@@ -24,6 +28,10 @@ let minValueKnifePower = 8
 protocol Weapon {
     /// The power of the weapon represents number of life points it will add or remove to the enemy
     var power: Int { get }
+    var typeName: String { get }
+    var canGiveStatus: WeaponEffect? { get }
+    func randomSuccess(limit: UInt32) -> Bool
+    func specialAction(_ characterPlaying: Character, _ characterTargeted: Character) -> ()
 }
 
 /// Weapon extension
@@ -32,10 +40,72 @@ extension Weapon {
     var typeName: String {
         return String(describing: type(of: self)).components(separatedBy: ".").last!
     }
+    
+    /// Give random success to an action
+    func randomSuccess(limit: UInt32) -> Bool {
+        let randomLimit: UInt32 = limit
+        let rand1 = arc4random_uniform(randomLimit)
+        let rand2 = arc4random_uniform(randomLimit)
+        print("\(rand1) \(rand2)") // test
+        return rand1 == rand2 ? true : false
+    }
+    
+    /// Use a special action on the character targeted
+    func specialAction(_ characterPlaying: Character, _ characterTargeted: Character) -> () {
+        guard let newStatus = self.canGiveStatus  else {
+            print("But it has no effect")
+            return
+        }
+        
+        let targetName = characterPlaying.name == characterTargeted.name ? "himself" : characterTargeted.name
+        print("\(characterPlaying.name) tries to \(newStatus.linkedAction) \(targetName)")
+        
+        guard (characterTargeted.status[newStatus] == nil) else {
+            print("\(characterTargeted.name) is already \(newStatus)")
+            return
+        }
+        
+        guard randomSuccess(limit: 2) else {
+            print("But \(characterPlaying.name) failed")
+            return
+        }
+        
+        characterTargeted.status[newStatus] = newStatus.duration
+        print("\(characterTargeted.name) is \(newStatus)")
+    }
 }
 
-/// Armory structure which help to manage weapon
-struct Armory {
+/// Enum listing possible bad states that can be given to enemy
+enum WeaponEffect {
+    case Stunned, Poisonned, Blinded
+    
+    /// Return the name of the Action linked to the bad state
+    var linkedAction: String {
+        switch self {
+        case .Stunned:
+            return "Stun"
+        case .Poisonned:
+            return "Poison"
+        case .Blinded:
+            return "Blind"
+        }
+    }
+    
+    /// Return how long is the bad state
+    var duration: Int {
+        switch self {
+        case .Stunned:
+            return 1
+        case .Blinded:
+            return 2
+        default:
+            return 0
+        }
+    }
+}
+
+/// Help to manage weapon assignement
+struct WeaponFactory {
     /// Return a weapon depending on the type of Character to equip
     static func giveWeapon(toCharacterOfType type: CharacterType, level: Int = 0) -> Weapon {
         switch type {
@@ -55,6 +125,7 @@ struct Armory {
 
 /// Sword is the weapon of the Fighter
 enum Sword: Int, Weapon, CaseCountable {
+    
     /// Type of Sword available
     case Heavy, Musketeer, Justice, Damoclès, Excalibur
     
@@ -73,6 +144,11 @@ enum Sword: Int, Weapon, CaseCountable {
             return minValueSwordPower  + 10
         }
     }
+
+    /// Return an optional containing or not the name of the special action wich can do the weapon
+    var canGiveStatus: WeaponEffect? {
+        return nil
+    }
 }
 
 /// Ring is the weapon of the Mage
@@ -90,6 +166,11 @@ enum Ring: Int, Weapon, CaseCountable {
         case .Merlin:
             return minValueRingPower + 7
         }
+    }
+    
+    /// Return an optional containing or not the name of the special action wich can do the weapon
+    var canGiveStatus: WeaponEffect? {
+        return nil
     }
 }
 
@@ -111,6 +192,11 @@ enum Mace: Int, Weapon, CaseCountable {
             return minValueMacePower + 8
         }
     }
+    
+    /// Return an optional containing or not the name of the special action wich can do the weapon
+    var canGiveStatus: WeaponEffect? {
+        return .Stunned
+    }
 }
 
 /// Axe is the weapon of the Dwarf
@@ -131,6 +217,11 @@ enum Axe: Int, Weapon, CaseCountable {
             return minValueAxePower  + 7
         }
     }
+    
+    /// Return an optional containing or not the name of the special action wich can do the weapon
+    var canGiveStatus: WeaponEffect? {
+        return .Blinded
+    }
 }
 
 /// Knife is the weapon of the Assassin
@@ -148,5 +239,10 @@ enum Knife: Int, Weapon, CaseCountable {
         case .Cyanide:
             return minValueKnifePower + 6
         }
+    }
+    
+    /// Return an optional containing or not the name of the special action wich can do the weapon
+    var canGiveStatus: WeaponEffect? {
+        return .Poisonned
     }
 }

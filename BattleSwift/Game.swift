@@ -13,11 +13,11 @@ class Game {
     /// Array containing each player and his Team, that will fight
     var teams: [Team] = []
     
-    /// Boolean indicating end of the game
-    var gameOver = false
+    /// List all players names to prevent duplicates
+    var playersNames: [String] = []
     
-    /// Give the Team wich wins the battle
-    var winner: Team?
+    /// List all characters names to prevent duplicates
+    var charactersNames: [String] = []
     
     /// A random number. If it is found during the battle, current Character get a better weapon
     var randomBonusNumber: UInt32
@@ -25,17 +25,19 @@ class Game {
     /// The maximum limit for the randomBonusNumber
     var randomLimit: UInt32 = 10
     
+    /// Give the Team wich wins the battle
+    var winner: Team?
+    
     /// Number of players (Teams) in the game
     static let numberOfPlayers = 2
     
     /// Number of Characters in each Team
     static let numberOfCharactersByTeam = 3
-    
-    ///
-    var playersNames: [String] = []
-    
-    ///
-    var charactersNames: [String] = []
+
+    /// Enum listing possible Action for Character in the game
+    enum Action: Int {
+        case normal = 1, special
+    }
     
     /// Initialize a new Game
     init() {
@@ -169,35 +171,44 @@ class Game {
     /// Perform the battle sequence
     func runBattle() {
         repeat{
+            // choose the character that will play
             let characterPlaying = chooseCharacter(fromTeam: teams[0])
             if characterPlaying.weaponUpdated == false {
                 searchForBonus(character: characterPlaying)
             }
+            
+            // choose an action
+            let action = chooseAction(character: characterPlaying)
+            
+            // choose the character to target
             let characterTargeted = chooseTarget(depending: characterPlaying)
             
-            // Character does his action
-            if (characterPlaying.weapon is Ring) {
-                characterTargeted.getHealed(by: characterPlaying)
+            // does the playing character can make his move ?
+            if characterCanMove(characterPlaying) {
+                // if so, he does his action
+                switch action {
+                case .normal:
+                    performNormalAction(characterPlaying, characterTargeted)
+                case .special:
+                    characterPlaying.weapon.specialAction(characterPlaying, characterTargeted)
+                }
             } else {
-                characterTargeted.receiveDamage(from: characterPlaying)
-                if characterTargeted.isDead {
-                    teams[1].bringDeadToCemetery()
-                    if teams[1].characters.count == 1 && teams[1].characters[0].type == .Mage {
-                        giveAttackWeaponToMage(mage: teams[1].characters[0])
-                    }
+                // if not we check if he's not dead
+                if (teams[0].isDefeated) {
+                    winner = teams[1]
+                    return
                 }
             }
             
-            if teams[1].characters.count == 0 {
-                gameOver = true
+            if teams[1].isDefeated {
                 winner = teams[0]
-            } else {
-                teams.reverse()
+                return
             }
             
-            print("\n****************************************")
+            teams.reverse()
+            print("\n**************************************")
             
-        } while (!gameOver)
+        } while (winner == nil)
     }
     
     /// Return the Character chosen by the player, who will do an action
@@ -244,7 +255,7 @@ class Game {
                 randomLevel = randomInt(max: (Knife.count - 1), min: minLevel)
             }
             
-            newWeapon = Armory.giveWeapon(toCharacterOfType: character.type, level: randomLevel)
+            newWeapon = WeaponFactory.giveWeapon(toCharacterOfType: character.type, level: randomLevel)
             character.weapon = newWeapon
             character.weaponUpdated = true
             
@@ -254,6 +265,23 @@ class Game {
         }
     }
     
+    /// Return an action the Character will do
+    func chooseAction(character: Character) -> Action {
+        var actionChosen = 0
+        guard let status = character.weapon.canGiveStatus else {
+            return .normal
+        }
+        
+        repeat {
+            print("\nChoose an action:")
+            print("1. \(character.weapon is Ring ? "Cure" : "Attack" )")
+            print("2. \(status.linkedAction)")
+            actionChosen = input()
+        } while(actionChosen <= 0 || actionChosen > 2)
+        
+        return Action(rawValue: actionChosen)!
+    }
+    
     /// Return the Character chosen by the player who will receive the effect of an action
     func chooseTarget(depending character: Character) -> Character {
         var team: Team
@@ -261,15 +289,14 @@ class Game {
         
         if character.weapon is Ring {
             team = teams[0]
-            contextMessage = "\nChoose a team mate to cure:"
+            contextMessage = "\nChoose a partner to cure:"
         }
         else {
             team = teams[1]
-            contextMessage = "\nChoose an enemy to attack:"
+            contextMessage = "\nChoose an enemy:"
         }
         
-        var playerChoice: Int
-        
+        var playerChoice = 0
         repeat {
             print(contextMessage)
             print(team.status())
@@ -277,6 +304,76 @@ class Game {
         } while (playerChoice == 0 || playerChoice > team.characters.count)
         
         return team.characters[playerChoice - 1]
+    }
+    
+    /// Check if a status player doesn't prevent the Character do move
+    func characterCanMove(_ character: Character) -> Bool {
+        
+        if character.status.isEmpty {
+            return true
+        }
+        
+        if (character.status[.Poisonned] != nil) {
+            print("\n\(character.name) is \(WeaponEffect.Poisonned)")
+            character.life -= 5
+            print("\(character.name) looses 5 PV")
+            if character.life <= 0 {
+                character.life = 0
+                character.isDead = true
+                print("\(character.name) is dead")
+                character.status.removeValue(forKey: .Poisonned)
+                teams[0].bringDeadToCemetery()
+                if teams[0].lastCharacterIsMage {
+                    giveAttackWeaponToMage(mage: teams[0].characters[0])
+                }
+                return false
+            }
+        }
+        
+        if character.status[.Stunned] != nil {
+            if character.status[.Stunned]! > 0 {
+                character.status[.Stunned]! -= 1
+                print("\n\(character.name) is \(WeaponEffect.Stunned)")
+                print("He can't move")
+                return false
+            } else {
+                character.status.removeValue(forKey: .Stunned)
+                print("\n\(character.name) is no more \(WeaponEffect.Stunned)")
+            }
+        }
+        
+        if character.status[.Blinded] != nil {
+            if character.status[.Blinded]! > 0 {
+                character.status[.Blinded]! -= 1
+                print("\n\(character.name) is \(WeaponEffect.Blinded)")
+                if character.weapon.randomSuccess(limit: 3) == false {
+                    print("He misses his target")
+                    return false
+                } else {
+                    print("But he can handle it")
+                }
+            } else {
+                character.status.removeValue(forKey: .Blinded)
+                print("\n\(character.name) is no more \(WeaponEffect.Blinded)")
+            }
+        }
+        
+        return true
+    }
+    
+    /// Perform basic action character can do
+    func performNormalAction(_ characterPlaying : Character, _ characterTargeted: Character) {
+        if (characterPlaying.weapon is Ring) {
+            characterTargeted.getHealed(by: characterPlaying)
+        } else {
+            characterTargeted.receiveDamage(from: characterPlaying)
+            if characterTargeted.isDead {
+                teams[1].bringDeadToCemetery()
+                if teams[1].lastCharacterIsMage {
+                    giveAttackWeaponToMage(mage: teams[1].characters[0])
+                }
+            }
+        }
     }
     
     /// Give an attack weapon to the Mage if he is the last Character of the Team

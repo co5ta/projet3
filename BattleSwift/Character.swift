@@ -9,13 +9,13 @@
 import Foundation
 
 /// Minimum value that can have the lifeMax property of the Character
-let minValueCharacterLifeMax = 50
+let minValueCharacterLifeMax = 0
 
 /// A *Character* object represents a warrior in a *Team*
 class Character {
     /// The name of the character
     var name: String
-
+    
     /// The type of the Character (Fighter, Mage, Colossus, ...)
     var type: CharacterType
     
@@ -24,6 +24,9 @@ class Character {
     
     /// The number of life points remaining to the Character
     var life: Int
+    
+    /// The status of the Character
+    var status: [WeaponEffect: Int] = [:]
     
     /// A Boolean indicating if the Character is dead or alive
     var isDead = false
@@ -36,12 +39,20 @@ class Character {
         self.name = name.uppercased()
         self.type = type
         self.life = type.lifeMax
-        self.weapon = Armory.giveWeapon(toCharacterOfType: type)
+        weapon = WeaponFactory.giveWeapon(toCharacterOfType: type)
+        
     }
     
     /// Return a String giving the name, the type, the strength and the remaining life of the Character
     func description() -> String {
-        return "\(name) (\(type), \(weapon.power) \(weapon is Ring ? "DEF" : "ATK"), \(life) PV)"
+        var text = "\(name) "
+        if (!status.isEmpty) {
+            for (key, _) in status {
+              text += "[\(key)] "
+            }
+        }
+        text += "(\(type), \(weapon.power) \(weapon is Ring ? "DEF" : "ATK"), \(life) PV)"
+        return text
     }
     
     /// Remove some life points from the Character
@@ -56,6 +67,7 @@ class Character {
         if life <= 0 {
             life = 0
             isDead = true
+            status = [:]
             print("\(name) is dead !")
         }
     }
@@ -71,7 +83,12 @@ class Character {
         // life can't be higher than lifeMax
         if life > type.lifeMax {
             life = type.lifeMax
-            print("He's life is at max level")
+            print("His life is at max level")
+        }
+        
+        if status.isEmpty == false {
+            status = [:]
+            print("And he's healed")
         }
     }
 }

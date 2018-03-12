@@ -24,6 +24,15 @@ class Team {
         return characters.count == 0 ? true : false
     }
     
+    /// Boolean wich return true if the last character remaining in the Team is a Mage
+    var lastCharacterIsMage: Bool {
+        var result = false
+        if (characters.count == 1 && characters[0].type == .Mage){
+            result = true
+        }
+        return result
+    }
+    
     /// Initialize a Team with a player name and a list of Characters
     init (playerName: String, characters: [Character]) {
         self.playerName = playerName
