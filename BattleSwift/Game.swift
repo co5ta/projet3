@@ -110,10 +110,12 @@ class Game {
             print("\n\(playerName) - choose the character \(i) of your team:")
             
             let newCharacter = createCharacter(typeMageForbidden: hasMage)
+            charactersOfTheTeam.append(newCharacter)
             print("\(newCharacter.description()) joins your team")
             
-            charactersOfTheTeam.append(newCharacter)
-            hasMage = newCharacter.type == .Mage ? true : false
+            if newCharacter.type == .Mage {
+                hasMage = true
+            }
         }
         
         return Team(playerName: playerName, characters: charactersOfTheTeam)
