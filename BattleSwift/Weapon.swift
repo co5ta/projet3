@@ -44,7 +44,6 @@ extension Weapon {
         let randomLimit: UInt32 = limit
         let rand1 = arc4random_uniform(randomLimit)
         let rand2 = arc4random_uniform(randomLimit)
-        print("\(rand1) \(rand2)") // test
         return rand1 == rand2 ? true : false
     }
     
