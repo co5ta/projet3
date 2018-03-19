@@ -95,7 +95,8 @@ class Game {
             print("\nPlayer\(index) enter your name:")
             
             // Check if the player entered a unique name
-            if let name = readLine()?.uppercased(), !playersNames.contains(name) {
+            if let name = readLine()?.uppercased().trimmingCharacters(in: .whitespacesAndNewlines),
+                !playersNames.contains(name) {
                 playerName = name
             } else {
                 print("This name has already been taken")
@@ -157,7 +158,9 @@ class Game {
         repeat {
             // Player choose a name for his character
             print("\nGive a name to this character")
-            if let name = readLine()?.uppercased(), !charactersNames.contains(name) {
+            if let name = readLine()?.uppercased().trimmingCharacters(in: .whitespacesAndNewlines),
+                !charactersNames.contains(name)
+            {
                 nameOfTheCharacter = name
             } else {
                 print("This name has already been given to a character")
