@@ -9,7 +9,7 @@
 import Foundation
 
 /// Minimum value that can have the lifeMax property of the Character
-let minValueCharacterLifeMax = 0
+let minValueCharacterLifeMax = 70
 
 /// A *Character* object represents a warrior in a *Team*
 class Character {
@@ -102,15 +102,15 @@ enum CharacterType: Int, CaseCountable {
     var lifeMax: Int {
         switch self {
         case .Fighter:
-            return minValueCharacterLifeMax + 50    // 100
+            return minValueCharacterLifeMax + 30    // 100
         case .Colossus:
-            return minValueCharacterLifeMax + 75    // 125
+            return minValueCharacterLifeMax + 45    // 115
         case .Dwarf:
-            return minValueCharacterLifeMax + 25    // 75
+            return minValueCharacterLifeMax + 15    // 85
         case .Assassin:
-            return minValueCharacterLifeMax + 40    // 90
+            return minValueCharacterLifeMax + 20    // 90
         case .Mage:
-            return minValueCharacterLifeMax + 30    // 80
+            return minValueCharacterLifeMax + 15    // 85
         }
     }
 }
